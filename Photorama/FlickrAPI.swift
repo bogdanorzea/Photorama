@@ -8,6 +8,10 @@
 
 import Foundation
 
+enum FlickrError: Error {
+    case invalidJSONData
+}
+
 enum Method: String {
     case interestingPhotos = "flickr.interestingness.getList"
 }
@@ -15,6 +19,11 @@ enum Method: String {
 struct FlickrAPI {
     private static let baseURLString = "https://api.flickr.com/services/rest/"
     private static let apiKey = "a6d819499131071f158fd740860a5a88"
+    private static let dateformatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyy-MM-dd HH:mm:ss"
+        return formatter
+    }()
     
     static var interestingPhotosURL: URL {
         return flickrURL(method: .interestingPhotos, parameters: ["extras": "url_h,date_taken"])
@@ -44,5 +53,48 @@ struct FlickrAPI {
         components.queryItems = queryItems
         
         return components.url!
+    }
+    
+    private static func photo(fromJSON data: [String:Any]) -> Photo? {
+        guard
+            let photoID = data["id"] as? String,
+            let title = data["title"] as? String,
+            let dateString = data["datetaken"] as? String,
+            let photoURLString = data["url_h"] as? String,
+            let url = URL(string: photoURLString),
+            let dateTaken = dateformatter.date(from: dateString)
+        else {
+            //Don't have enough information to construct a Photo
+            return nil
+        }
+        
+        return Photo(title: title, remoteURL: url, photoID: photoID, dateTaken: dateTaken)
+        
+    }
+    
+    static func photos(fromJSON data: Data) -> PhotoResult {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+            
+            guard
+                let jsonDictionary = jsonObject as? [AnyHashable:Any],
+                let photos = jsonDictionary["photos"] as? [String:Any],
+                let photoArray = photos["photo"] as? [[String:Any]]
+                else {
+                    // JSON structure did not match the expectations
+                    return .failure(FlickrError.invalidJSONData)
+            }
+            
+            var finalPhotos = [Photo]()
+            for photoJSON in photoArray {
+                if let photo = photo(fromJSON: photoJSON) {
+                    finalPhotos.append(photo)
+                }
+            }
+            
+            return .success(finalPhotos)
+        } catch let error {
+            return .failure(error)
+        }
     }
 }
