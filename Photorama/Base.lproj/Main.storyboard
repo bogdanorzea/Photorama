@@ -35,7 +35,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="90" height="90"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XPH-sq-gyL">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XPH-sq-gyL">
                                                     <rect key="frame" x="0.0" y="0.0" width="90" height="90"/>
                                                 </imageView>
                                                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="C2M-cZ-VpM">
@@ -55,6 +55,7 @@
                                         <connections>
                                             <outlet property="imageView" destination="XPH-sq-gyL" id="Os8-xC-awL"/>
                                             <outlet property="spinner" destination="C2M-cZ-VpM" id="Is0-0T-Xl0"/>
+                                            <segue destination="r37-Gz-jsb" kind="show" identifier="showPhoto" id="XJe-jl-JPK"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -76,7 +77,36 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1254" y="-564"/>
+            <point key="canvasLocation" x="1178" y="-564"/>
+        </scene>
+        <!--Photo Info View Controller-->
+        <scene sceneID="NPJ-Eq-tgD">
+            <objects>
+                <viewController id="r37-Gz-jsb" customClass="PhotoInfoViewController" customModule="Photorama" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wCF-Z4-3tc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bfl-XL-PQi">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="bfl-XL-PQi" firstAttribute="trailing" secondItem="b2h-ni-U4V" secondAttribute="trailing" id="G93-mj-ni0"/>
+                            <constraint firstItem="bfl-XL-PQi" firstAttribute="bottom" secondItem="b2h-ni-U4V" secondAttribute="bottom" id="Si0-wx-aFM"/>
+                            <constraint firstItem="bfl-XL-PQi" firstAttribute="leading" secondItem="b2h-ni-U4V" secondAttribute="leading" id="gxL-am-QIK"/>
+                            <constraint firstItem="bfl-XL-PQi" firstAttribute="top" secondItem="b2h-ni-U4V" secondAttribute="top" id="mIO-W3-Udw"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="b2h-ni-U4V"/>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="bfl-XL-PQi" id="zbz-ES-aGW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DN5-J3-Nmi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2266" y="-564"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="3Ll-9J-HY5">
