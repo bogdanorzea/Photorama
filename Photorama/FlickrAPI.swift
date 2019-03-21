@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 
 enum FlickrError: Error {
     case invalidJSONData
@@ -55,7 +56,8 @@ struct FlickrAPI {
         return components.url!
     }
     
-    private static func photo(fromJSON data: [String:Any]) -> Photo? {
+    private static func photo(fromJSON data: [String:Any],
+                              into context: NSManagedObjectContext) -> Photo? {
         guard
             let photoID = data["id"] as? String,
             let title = data["title"] as? String,
@@ -68,11 +70,33 @@ struct FlickrAPI {
             return nil
         }
         
-        return Photo(title: title, remoteURL: url, photoID: photoID, dateTaken: dateTaken)
+        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+        let predicate = NSPredicate(format: "\(#keyPath(Photo.photoID)) == \(photoID)")
+        fetchRequest.predicate = predicate
         
+        var fetchPhotos: [Photo]?
+        context.performAndWait {
+            fetchPhotos = try? fetchRequest.execute()
+        }
+        if let existingPhoto = fetchPhotos?.first {
+            return existingPhoto
+        }
+        
+        var photo: Photo!
+        context.performAndWait {
+            photo = Photo(context: context)
+            photo.title = title
+            photo.photoID = photoID
+            photo.remoteURL = url as NSURL
+            photo.dateTaken = dateTaken as NSDate
+            
+        }
+        
+        return photo
     }
     
-    static func photos(fromJSON data: Data) -> PhotoResult {
+    static func photos(fromJSON data: Data,
+                       into context: NSManagedObjectContext) -> PhotoResult {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             
@@ -87,7 +111,7 @@ struct FlickrAPI {
             
             var finalPhotos = [Photo]()
             for photoJSON in photoArray {
-                if let photo = photo(fromJSON: photoJSON) {
+                if let photo = photo(fromJSON: photoJSON, into: context) {
                     finalPhotos.append(photo)
                 }
             }
